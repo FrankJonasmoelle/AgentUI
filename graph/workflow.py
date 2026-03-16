@@ -13,8 +13,14 @@ from tools.tools import AGENT_TOOLS
 # load OPENAI_API_KEY from .env file
 load_dotenv()
 
-# initialize llm
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+# initialize llm with OpenRouter
+llm = ChatOpenAI(
+    model="gpt-4o-mini",
+    temperature=0,
+    openai_api_key=os.environ["OPENROUTER_API_KEY"],
+    openai_api_base="https://openrouter.ai/api/v1",
+)
+
 llm_with_tools = llm.bind_tools(AGENT_TOOLS)
 
 
@@ -24,10 +30,13 @@ def call_model(state: AgentState):
     system_prompt = SystemMessage("""
         You are a funny, brilliant assistant. Yuo have access to tools like web search and calculator. Use it if it makes sense!
 
-        Rules:
-        - If you are asked a factual question, ALWAYS use the web search tool to find the most up-to-date answer.
-        - If you are asked to do math, ALWAYS use the calculator tool.
-        - Be concise but friendly in your final answers.
+        You have access to a web search tool, a webpage reader, a Python environment, and a file writer.
+    
+    Rules:
+    - If asked to research a topic, use DuckDuckGo to find links, then use the Web Reader to read the most relevant URL.
+    - If asked to do complex math, analyze data, or write scripts, use the Python REPL tool to execute code and get the exact answer.
+    - If asked to create a report, write the final content to a file using the File Writer tool.
+    - Be concise but friendly in your final answers to the user.
     """)
     messages = state["messages"]
 

@@ -4,3 +4,9 @@ langchain_openai
 dotenv
 langchain-community
 ddgs
+fastapi 
+uvicorn 
+pydantic
+beautifulsoup4
+requests
+langchain-experimental
