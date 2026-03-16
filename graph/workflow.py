@@ -28,11 +28,13 @@ llm_with_tools = llm.bind_tools(AGENT_TOOLS)
 def call_model(state: AgentState):
     """Passes the conversation history to the LLM"""
     system_prompt = SystemMessage("""
-        You are a funny, brilliant assistant. Yuo have access to tools like web search and calculator. Use it if it makes sense!
+        You are a funny, brilliant assistant. Yuo have access to tools, use them if it makes sense!
 
         You have access to a web search tool, a webpage reader, a Python environment, and a file writer.
-    
+
     Rules:
+    - If asked about personal documents or files, use the search_documents tool to find relevant information.
+    - If writing math formulas, always use $$ for block math and $ for inline math.
     - If asked to research a topic, use DuckDuckGo to find links, then use the Web Reader to read the most relevant URL.
     - If asked to do complex math, analyze data, or write scripts, use the Python REPL tool to execute code and get the exact answer.
     - If asked to create a report, write the final content to a file using the File Writer tool.

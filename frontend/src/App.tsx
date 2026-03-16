@@ -1,4 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 import './index.css'
 
 
@@ -62,7 +66,12 @@ function App() {
       <div className="messages">
         {messages.map((msg, index) => (
           <div key={index} className={`bubble ${msg.role}`}>
-            {msg.text}
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+            >
+              {msg.text}
+            </ReactMarkdown>
           </div>
         ))}
         <div ref={bottomRef} />
@@ -71,6 +80,9 @@ function App() {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') sendMessage()
+          }}
           placeholder="How can the agent help you? :)"
         />
         <button onClick={sendMessage}>Send</button>

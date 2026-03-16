@@ -10,3 +10,8 @@ pydantic
 beautifulsoup4
 requests
 langchain-experimental
+wikipedia
+chromadb 
+langchain-chroma 
+pypdf
+langchain-text-splitters

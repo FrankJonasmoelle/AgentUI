@@ -4,12 +4,19 @@ from bs4 import BeautifulSoup
 from langchain_experimental.tools import PythonREPLTool
 from langchain_core.tools import tool
 from langchain_community.tools import DuckDuckGoSearchRun
+from langchain_community.tools import WikipediaQueryRun
+from langchain_community.utilities import WikipediaAPIWrapper
+from langchain_chroma import Chroma
+from langchain_openai import OpenAIEmbeddings
 
 # tool: websearch
 web_search = DuckDuckGoSearchRun()
 
-# toll: python terminal
+# tool: python terminal
 python_repl = PythonREPLTool()
+
+# tool: wikipedia
+wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
 
 
 @tool
@@ -22,6 +29,43 @@ def multiply_numbers(a: float, b: float) -> float:
 def divide_numbers(a: float, b: float) -> float:
     """Used to divide to numbers. Use it for math"""
     return a / b
+
+
+@tool
+def search_documents(query: str) -> str:
+    """Search through uploaded documents and PDFs for relevant information.
+    Use this when the user asks about something that might be in their documents."""
+    try:
+        embeddings = OpenAIEmbeddings()
+        db = Chroma(persist_directory="chroma_db", embedding_function=embeddings)
+        results = db.similarity_search(query, k=3)
+        if not results:
+            return "No relevant documents found."
+        return "\n\n".join([doc.page_content for doc in results])
+    except Exception as e:
+        return f"Error searching documents: {e}"
+
+
+@tool
+def get_current_datetime() -> str:
+    """Returns the current date and time."""
+    from datetime import datetime
+
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+@tool
+def get_weather(city: str) -> str:
+    """Get the current weather for a city. Input should be a city name like 'London' or 'New York'."""
+    try:
+        response = requests.get(
+            f"https://wttr.in/{city}?format=3",
+            headers={"User-Agent": "curl/7.0"},
+            timeout=10,
+        )
+        return response.text
+    except Exception as e:
+        return f"Error fetching weather: {e}"
 
 
 @tool
@@ -63,6 +107,10 @@ def write_to_file(filename: str, content: str) -> str:
 AGENT_TOOLS = [
     python_repl,
     web_search,
+    wikipedia,
+    search_documents,
+    get_current_datetime,
+    get_weather,
     read_webpage,
     multiply_numbers,
     divide_numbers,
