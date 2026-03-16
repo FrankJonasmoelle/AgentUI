@@ -22,17 +22,40 @@ Install the required dependencies:
 Configuration
 -------------
 
-Create a `.env` file in the project root and add your OpenAI API key:
+Create a `.env` file in the project root and add your OpenRouter / OpenAI API key:
 
 .. code-block:: bash
 
-   OPENAI_API_KEY=sk-your-api-key
+   OPENAI_API_KEY=your-api-key
+   OPENROUTER_API_KEY=your-api-key
 
 
 Run the Application
 -------------------
 
-Start the Streamlit UI:
+Create the vector embeddings:
+
+.. code-block:: bash
+
+   python3 ingest.py
+
+
+Run the backend: 
+
+.. code-block:: bash
+
+   python3 server.py
+
+
+And the frontend:
+
+.. code-block:: bash
+
+   cd frontend/
+   npm run dev
+
+
+Alternatively run with Streamlit:
 
 .. code-block:: bash
 
